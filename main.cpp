@@ -15,7 +15,7 @@ int totalPacketSize = 0;
 int currentMin = INT_MAX;
 int currentMax = INT_MIN;
 struct timeval startTime;
-
+struct timeval endTime;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
     }
 
     cout << "The packet starts at " << ctime((const time_t*)&startTime.tv_sec) << endl;
+    cout << "The packet ends at " << ctime((const time_t*)&endTime.tv_sec) << endl;
     cout << "There are " << numPackets << " packets in total" << endl;
     cout << "Average packet size is " << totalPacketSize / numPackets << " Bytes" << endl;
     cout << "The biggest packet is " << currentMax << " Bytes" << endl;
@@ -64,7 +65,11 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     char destIp[INET_ADDRSTRLEN];
 
     // Put time within here if it is the first one
-    startTime = pkthdr->ts;
+    if (numPackets == 0) {
+        startTime = pkthdr->ts;
+    } else {
+        endTime = pkthdr->ts;
+    }
 
     // Size management
     numPackets++;
