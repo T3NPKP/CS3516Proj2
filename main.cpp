@@ -6,6 +6,7 @@
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>
+#include <netinet/ether.h>
 #include <climits>
 #include <time.h>
 
