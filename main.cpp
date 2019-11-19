@@ -46,7 +46,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    double timeLast = endTime.tv_sec - startTime.tv_sec + (endTime.tv_usec - startTime.tv_usec)/ 1000000;
+    double usec = endTime.tv_usec - startTime.tv_usec;
+    double timeLast = endTime.tv_sec - startTime.tv_sec + usec / 1000000;
 
     cout << "The packet starts at " << ctime((const time_t*)&startTime.tv_sec) << endl;
     cout << "The packet lasts " << timeLast << " seconds" << endl;
