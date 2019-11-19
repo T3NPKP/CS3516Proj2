@@ -81,8 +81,10 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     ethernetHeader = (struct ether_header*)packet;
-    cout << "The sender Ethernet address is: " << reinterpret_cast<const char*>(ethernetHeader->ether_shost) << endl;
-    cout << "The receiver Ethernet address is: " << reinterpret_cast<const char*>(ethernetHeader->ether_dhost) << endl;
+    cout << "The destination Ethernet address is: " << ether_ntoa(
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost)) << endl;
+    cout << "The source Ethernet address is: " << ether_ntoa(
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost)) << endl;
 
 
     // Size management
