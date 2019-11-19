@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     double usec = endTime.tv_usec - startTime.tv_usec;
     double timeLast = endTime.tv_sec - startTime.tv_sec + usec / 1000000;
 
-    cout << "The packet starts at " << ctime((const time_t*)&startTime.tv_sec) << endl;
+    cout << "The packet starts at " << ctime((const time_t*)&startTime.tv_sec);
     cout << "The packet lasts " << timeLast << " seconds" << endl;
     cout << "There are " << numPackets << " packets in total" << endl;
     cout << "Average packet size is " << totalPacketSize / numPackets << " Bytes" << endl;
