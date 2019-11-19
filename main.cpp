@@ -1,10 +1,17 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-nullptr"
 #include <iostream>
 #include <pcap.h>
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>
+
 using namespace std;
+int numPackets = 0;
+int totalPacketSize = 0;
+int currentMin = INT_MAX;
+int currentMax = INT_MIN;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
@@ -35,7 +42,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    cout << "Hello, World!" << endl;
+    cout << "There are " << numPackets << " packets in total" << endl;
+    cout << "Average packet size is " << totalPacketSize / numPackets << " Bytes" << endl;
+    cout << "The biggest packet is " << currentMax << " Bytes" << endl;
+    cout << "The smallest packet is " << currentMin << " Bytes" << endl;
+
     return 0;
 }
 
@@ -43,26 +54,23 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     const struct ether_header *ethernetHeader;
     const struct ip *ipHeader;
     const struct udphdr *udpHeader;
+    struct ether_header *eth_header;
     char sourceIp[INET_ADDRSTRLEN];
     char destIp[INET_ADDRSTRLEN];
-    cout << "Packet capture length:" << pkthdr->caplen << endl;
-    cout << "Packet total length" << pkthdr->len << endl;
-
-    struct ether_header *eth_header;
-    /* The packet is larger than the ether_header struct,
-       but we just want to look at the first part of the packet
-       that contains the header. We force the compiler
-       to treat the pointer to the packet as just a pointer
-       to the ether_header. The data payload of the packet comes
-       after the headers. Different packet types have different header
-       lengths though, but the ethernet header is always the same (14 bytes) */
+    numPackets++;
+    int size = pkthdr->len;
+    if (size > currentMax) currentMax = size;
+    if (size < currentMin) currentMin = size;
+    totalPacketSize += size;
     eth_header = (struct ether_header *) packet;
 
     if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
         printf("IP\n");
     } else  if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
         printf("ARP\n");
-    } else  if (ntohs(eth_header->ether_type) == ETHERTYPE_REVARP) {
-        printf("Reverse ARP\n");
+    } else {
+        cout << "Not a type supported, aborting" << endl;
+        return;
     }
 }
+#pragma clang diagnostic pop
