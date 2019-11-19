@@ -10,6 +10,7 @@ int main(int argc, char* argv[]) {
         return 1;
     } else {
         descr = pcap_open_offline(argv[1], errbuf);
+        cout << "Opening file" << argv[1] << endl;
     }
     if (descr == NULL) {
         cout << "pcap_open() failed: " << errbuf << endl;
@@ -18,7 +19,10 @@ int main(int argc, char* argv[]) {
 
     if (pcap_datalink(descr) != DLT_EN10MB) {
         cout << "A package not captured from Ethernet, aborting" << endl;
+        return 1;
     }
+
+    cout << "File opened, analyzing..." << endl;
 
 
 
