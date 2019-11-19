@@ -58,6 +58,9 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     struct ether_header *eth_header;
     char sourceIp[INET_ADDRSTRLEN];
     char destIp[INET_ADDRSTRLEN];
+    cout << (pkthdr->ts).tv_sec << endl;
+
+    // Size management
     numPackets++;
     int size = pkthdr->len;
     if (size > currentMax) currentMax = size;
