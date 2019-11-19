@@ -8,6 +8,7 @@
 #include <netinet/udp.h>
 #include <climits>
 #include <time.h>
+#define ETHER_ADDR_LEN	6
 
 using namespace std;
 int numPackets = 0;
@@ -16,6 +17,12 @@ int currentMin = INT_MAX;
 int currentMax = INT_MIN;
 struct timeval startTime;
 struct timeval endTime;
+
+typedef struct __attribute__((__packed__)) EtherHeader {
+    const struct ether_addr destAddr;
+    const struct ether_addr sourceAddr;
+    uint8_t protocol;
+}EtherHeader;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
@@ -74,6 +81,11 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         endTime = pkthdr->ts;
     }
 
+    ethernetHeader = (struct ether_header*)packet;
+    cout << "The sender MAC address is: " << ethernetHeader->ether_shost << endl;
+    cout << "The receiver MAC address is: " << ethernetHeader->ether_dhost << endl;
+
+
     // Size management
     numPackets++;
     int size = pkthdr->len;
@@ -82,9 +94,9 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     totalPacketSize += size;
     eth_header = (struct ether_header *) packet;
 
-    if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
+    if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_IP) {
         printf("IP\n");
-    } else  if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
+    } else  if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_ARP) {
         printf("ARP\n");
     } else {
         cout << "Not a type supported, aborting" << endl;
