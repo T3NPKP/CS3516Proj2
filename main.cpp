@@ -45,6 +45,6 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     const struct udphdr *udpHeader;
     char sourceIp[INET_ADDRSTRLEN];
     char destIp[INET_ADDRSTRLEN];
-    printf("Packet capture length: %d\n", pkthdr->caplen);
-    printf("Packet total length %d\n", pkthdr->len);
+    cout << "Packet capture length: %d\n" << pkthdr->caplen << endl;
+    cout << "Packet total length %d\n" << pkthdr->len << endl;
 }
