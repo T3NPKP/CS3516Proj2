@@ -8,7 +8,6 @@
 #include <netinet/udp.h>
 #include <climits>
 #include <time.h>
-#define ETHER_ADDR_LEN	6
 
 using namespace std;
 int numPackets = 0;
@@ -82,8 +81,8 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     ethernetHeader = (struct ether_header*)packet;
-    cout << "The sender MAC address is: " << ethernetHeader->ether_shost << endl;
-    cout << "The receiver MAC address is: " << ethernetHeader->ether_dhost << endl;
+    cout << "The sender Ethernet address is: " << reinterpret_cast<const char*>(ethernetHeader->ether_shost) << endl;
+    cout << "The receiver Ethernet address is: " << reinterpret_cast<const char*>(ethernetHeader->ether_dhost) << endl;
 
 
     // Size management
