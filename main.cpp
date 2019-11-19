@@ -45,6 +45,24 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     const struct udphdr *udpHeader;
     char sourceIp[INET_ADDRSTRLEN];
     char destIp[INET_ADDRSTRLEN];
-    cout << "Packet capture length: %d\n" << pkthdr->caplen << endl;
-    cout << "Packet total length %d\n" << pkthdr->len << endl;
+    cout << "Packet capture length:" << pkthdr->caplen << endl;
+    cout << "Packet total length" << pkthdr->len << endl;
+
+    struct ether_header *eth_header;
+    /* The packet is larger than the ether_header struct,
+       but we just want to look at the first part of the packet
+       that contains the header. We force the compiler
+       to treat the pointer to the packet as just a pointer
+       to the ether_header. The data payload of the packet comes
+       after the headers. Different packet types have different header
+       lengths though, but the ethernet header is always the same (14 bytes) */
+    eth_header = (struct ether_header *) packet;
+
+    if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
+        printf("IP\n");
+    } else  if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
+        printf("ARP\n");
+    } else  if (ntohs(eth_header->ether_type) == ETHERTYPE_REVARP) {
+        printf("Reverse ARP\n");
+    }
 }
