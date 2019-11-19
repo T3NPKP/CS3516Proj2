@@ -6,6 +6,7 @@
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>
+#include <climits>
 
 using namespace std;
 int numPackets = 0;
