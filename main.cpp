@@ -1,5 +1,5 @@
 #include <iostream>
-#include "pcap.h"
+#include <pcap.h>
 using namespace std;
 
 int main(int argc, char* argv[]) {
@@ -7,6 +7,7 @@ int main(int argc, char* argv[]) {
     char errbuf[PCAP_ERRBUF_SIZE];
     if (argc != 2) {
         cout << "Illegal input, must put only the file path" << endl;
+        return 1;
     } else {
         descr = pcap_open_offline(argv[1], errbuf);
     }
