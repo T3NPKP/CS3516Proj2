@@ -21,12 +21,14 @@ int currentMin = INT_MAX;
 int currentMax = INT_MIN;
 struct timeval startTime;
 struct timeval endTime;
-map<char *, int> sourceEth;
-map<char *, int> destEth;
-map<char *, int> sourceIP;
-map<char *, int> destIP;
+map<char *, int> sourceEths;
+map<char *, int> destEths;
+map<char *, int> sourceIPs;
+map<char *, int> destIPs;
 list<u_short> destPorts;
 list<u_short> sourcePorts;
+list<char *> ARPEth;
+list<char *> ARPIP;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
@@ -69,32 +71,32 @@ int main(int argc, char* argv[]) {
     cout << "The biggest packet is " << currentMax << " Bytes" << endl;
     cout << "The smallest packet is " << currentMin << " Bytes" << endl;
 
-    auto it = sourceEth.begin();
-    while (it != sourceEth.end()) {
+    auto it = sourceEths.begin();
+    while (it != sourceEths.end()) {
         char* ethStr = it->first;
         int amount = it->second;
         cout << "Ethernet address " << ethStr << " has " << amount << " packets related as source" << endl;
         it++;
     }
 
-    it = destEth.begin();
-    while (it != destEth.end()) {
+    it = destEths.begin();
+    while (it != destEths.end()) {
         char* destStr = it->first;
         int amount = it->second;
         cout << "Ethernet address " << destStr << " has " << amount << " packets related as destination" << endl;
         it++;
     }
 
-    it = sourceIP.begin();
-    while (it != sourceIP.end()) {
+    it = sourceIPs.begin();
+    while (it != sourceIPs.end()) {
         char* IPStr = it -> first;
         int amount = it -> second;
         cout << "IP address " << IPStr << " has " << amount << " packets related as source" << endl;
         it ++;
     }
 
-    it = destIP.begin();
-    while (it != destIP.end()) {
+    it = destIPs.begin();
+    while (it != destIPs.end()) {
         char* IPStr = it -> first;
         int amount = it -> second;
         cout << "IP address " << IPStr << " has " << amount << " packets related as destination" << endl;
@@ -116,9 +118,22 @@ int main(int argc, char* argv[]) {
     cout << "These ports are used in communication as destination: ";
     for (iterator = destPorts.begin(); iterator != destPorts.end(); ++ iterator) {
         cout << to_string(*iterator) << " ";
-        it ++;
     }
     cout << '\n';
+
+    ARPIP.sort();
+    ARPEth.sort();
+    ARPIP.unique();
+    ARPIP.unique();
+    cout << "These ethernet address involve ARP: " << endl;
+    for(list<char*>::const_iterator iterator = ARPEth.begin(); iterator != ARPEth.end(); ++iterator) {
+        cout << *iterator << endl;
+    }
+
+    cout << "These IP address involve ARP: " << endl;
+    for(list<char*>::const_iterator iterator = ARPIP.begin(); iterator != ARPIP.end(); ++iterator) {
+        cout << *iterator << endl;
+    }
 
     return 0;
 }
@@ -140,22 +155,22 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
 
     char* sourceEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
-    if (sourceEth.count(sourceEthStr) == 0) {
-        sourceEth.insert(sourceEth.begin(),pair<char *, int>(sourceEthStr, 1));
+    if (sourceEths.count(sourceEthStr) == 0) {
+        sourceEths.insert(sourceEths.begin(),pair<char *, int>(sourceEthStr, 1));
     } else {
-        int currentNum = sourceEth.at(sourceEthStr);
-        sourceEth.erase(sourceEthStr);
-        sourceEth.insert(sourceEth.begin(),pair<char*, int>(sourceEthStr, currentNum + 1));
+        int currentNum = sourceEths.at(sourceEthStr);
+        sourceEths.erase(sourceEthStr);
+        sourceEths.insert(sourceEths.begin(),pair<char*, int>(sourceEthStr, currentNum + 1));
     }
 
     char* destEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
-    if (destEth.count(destEthStr) == 0) {
-        destEth.insert(destEth.begin(),pair<char *, int> (destEthStr, 1));
+    if (destEths.count(destEthStr) == 0) {
+        destEths.insert(destEths.begin(),pair<char *, int> (destEthStr, 1));
     } else {
-        int currentNum = destEth.at(destEthStr);
-        destEth.erase(destEthStr);
-        destEth.insert(destEth.begin(),pair<char *, int>(destEthStr, currentNum + 1));
+        int currentNum = destEths.at(destEthStr);
+        destEths.erase(destEthStr);
+        destEths.insert(destEths.begin(),pair<char *, int>(destEthStr, currentNum + 1));
     }
     cout << sourceEthStr << endl;
     cout << destEthStr << endl;
@@ -166,19 +181,19 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     char sourceIPStr[INET_ADDRSTRLEN]= "";
     inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIPStr, sizeof(destIPStr));
     inet_ntop(AF_INET, &(ipHeader->ip_dst), destIPStr, sizeof(sourceIPStr));
-    if (sourceIP.count(sourceIPStr) == 0) {
-        sourceIP.insert(sourceIP.begin(),pair<char *, int>(sourceIPStr, 1));
+    if (sourceIPs.count(sourceIPStr) == 0) {
+        sourceIPs.insert(sourceIPs.begin(),pair<char *, int>(sourceIPStr, 1));
     } else {
-        int currentNum = sourceIP.at(sourceIPStr);
-        sourceIP.erase(sourceIPStr);
-        sourceIP.insert(sourceIP.begin(),pair<char*, int>(sourceIPStr, currentNum + 1));
+        int currentNum = sourceIPs.at(sourceIPStr);
+        sourceIPs.erase(sourceIPStr);
+        sourceIPs.insert(sourceIPs.begin(),pair<char*, int>(sourceIPStr, currentNum + 1));
     }
-    if (destIP.count(destIPStr) == 0) {
-        destIP.insert(destIP.begin(),pair<char *, int>(destIPStr, 1));
+    if (destIPs.count(destIPStr) == 0) {
+        destIPs.insert(destIPs.begin(),pair<char *, int>(destIPStr, 1));
     } else {
-        int currentNum = destIP.at(destIPStr);
-        destIP.erase(destIPStr);
-        destIP.insert(destIP.begin(),pair<char*, int>(destIPStr, currentNum + 1));
+        int currentNum = destIPs.at(destIPStr);
+        destIPs.erase(destIPStr);
+        destIPs.insert(destIPs.begin(),pair<char*, int>(destIPStr, currentNum + 1));
     }
     cout << sourceIPStr << endl;
     cout << destIPStr << endl;
@@ -199,7 +214,10 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_IP) {
         //TODO: do something for IP
     } else  if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_ARP) {
-        //TODO: do something for ARP
+        ARPEth.push_front(sourceEthStr);
+        ARPEth.push_front(destEthStr);
+        ARPIP.push_front(sourceEthStr);
+        ARPIP.push_front(destEthStr);
     } else {
         cout << "Not a type supported, aborting" << endl;
         return;
