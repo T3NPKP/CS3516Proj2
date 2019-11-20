@@ -11,6 +11,7 @@
 #include <netinet/ether.h>
 #include <climits>
 #include <time.h>
+#include <arpa/inet.h>
 
 using namespace std;
 
@@ -80,7 +81,7 @@ int main(int argc, char* argv[]) {
     while (it != destEth.end()) {
         char* destStr = it->first;
         int amount = it->second;
-        cout << "Ethernet address " << destStr << " has " << amount << "packets related as destination" << endl;
+        cout << "Ethernet address " << destStr << " has " << amount << " packets related as destination" << endl;
         it++;
     }
 
@@ -102,6 +103,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         endTime = pkthdr->ts;
     }
 
+    //ethernet address
     ethernetHeader = (struct ether_header*)packet;
     char* sourceEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
@@ -121,10 +123,12 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         destEth.erase(destEthStr);
         destEth.insert(pair<char*, int>(destEthStr, currentNum + 1));
     }
-    cout << "The destination Ethernet address is: " << ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost)) << endl;
-    cout << "The source Ethernet address is: " << ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost)) << endl;
+
+    // IP address
+    char str[INET_ADDRSTRLEN];
+    ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
+    cout << inet_ntoa(ipHeader->ip_dst) << endl;
+
 
 
     // Size management
@@ -133,12 +137,11 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     if (size > currentMax) currentMax = size;
     if (size < currentMin) currentMin = size;
     totalPacketSize += size;
-    eth_header = (struct ether_header *) packet;
 
     if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_IP) {
-        printf("IP\n");
+        //TODO: do something for IP
     } else  if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_ARP) {
-        printf("ARP\n");
+        //TODO: do something for ARP
     } else {
         cout << "Not a type supported, aborting" << endl;
         return;
