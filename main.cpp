@@ -106,18 +106,16 @@ int main(int argc, char* argv[]) {
     destPorts.unique();
     sourcePorts.unique();
 
-    auto itList = sourcePorts.begin();
     cout << "These ports are used in communication as source: ";
-    while (itList != sourcePorts.end()) {
-        cout << *itList << ", ";
-        it ++;
+    list<u_short>::const_iterator iterator;
+    for (iterator = sourcePorts.begin(); iterator != sourcePorts.end(); ++iterator) {
+        std::cout << *iterator << ", ";
     }
     cout << '\n';
 
-    itList = destPorts.begin();
     cout << "These ports are used in communication as destination: ";
-    while (itList != destPorts.end()) {
-        cout << *itList << ", ";
+    for (iterator = destPorts.begin(); iterator != destPorts.end(); ++ iterator) {
+        cout << *iterator << ", ";
         it ++;
     }
     cout << '\n';
