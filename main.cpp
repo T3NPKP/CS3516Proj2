@@ -23,8 +23,8 @@ struct timeval startTime;
 struct timeval endTime;
 map<char *, int> sourceEths;
 map<char *, int> destEths;
-map<char *, int> sourceIPs;
-map<char *, int> destIPs;
+map<string, int> sourceIPs;
+map<string, int> destIPs;
 list<u_short> destPorts;
 list<u_short> sourcePorts;
 list<char *> ARPEth;
@@ -71,33 +71,27 @@ int main(int argc, char* argv[]) {
     cout << "The biggest packet is " << currentMax << " Bytes" << endl;
     cout << "The smallest packet is " << currentMin << " Bytes" << endl;
 
-    auto it = sourceEths.begin();
-    while (it != sourceEths.end()) {
+    for (auto it = sourceEths.begin(); it != sourceEths.end(); ++it) {
         char* ethStr = it->first;
         int amount = it->second;
         cout << "Ethernet address " << ethStr << " has " << amount << " packets related as source" << endl;
-        it++;
     }
 
-    it = destEths.begin();
-    while (it != destEths.end()) {
+    for (auto it = destEths.begin(); it != destEths.end(); ++it) {
         char* destStr = it->first;
         int amount = it->second;
         cout << "Ethernet address " << destStr << " has " << amount << " packets related as destination" << endl;
-        it++;
     }
 
-    it = sourceIPs.begin();
-    while (it != sourceIPs.end()) {
-        char* IPStr = it -> first;
+    for (auto it = sourceIPs.begin(); it != sourceIPs.end(); ++it) {
+        string IPStr = it -> first;
         int amount = it -> second;
         cout << "IP address " << IPStr << " has " << amount << " packets related as source" << endl;
         it ++;
     }
 
-    it = destIPs.begin();
-    while (it != destIPs.end()) {
-        char* IPStr = it -> first;
+    for (auto it = sourceIPs.begin(); it != sourceIPs.end(); ++it) {
+        string IPStr = it -> first;
         int amount = it -> second;
         cout << "IP address " << IPStr << " has " << amount << " packets related as destination" << endl;
         it ++;
@@ -109,14 +103,13 @@ int main(int argc, char* argv[]) {
     sourcePorts.unique();
 
     cout << "These ports are used in communication as source: ";
-    list<u_short>::const_iterator iterator;
-    for (iterator = sourcePorts.begin(); iterator != sourcePorts.end(); ++iterator) {
+    for (list<u_short>::const_iterator iterator = sourcePorts.begin(); iterator != sourcePorts.end(); ++iterator) {
         std::cout << to_string(*iterator) << " ";
     }
     cout << '\n';
 
     cout << "These ports are used in communication as destination: ";
-    for (iterator = destPorts.begin(); iterator != destPorts.end(); ++ iterator) {
+    for (list<u_short>::const_iterator iterator = destPorts.begin(); iterator != destPorts.end(); ++ iterator) {
         cout << to_string(*iterator) << " ";
     }
     cout << '\n';
@@ -126,14 +119,14 @@ int main(int argc, char* argv[]) {
     ARPIP.unique();
     ARPIP.unique();
     cout << "These ethernet address involve ARP: " << endl;
-    for(list<char*>::const_iterator iterator = ARPEth.begin(); iterator != ARPEth.end(); ++iterator) {
-        cout << *iterator << endl;
-    }
+//    for(list<char*>::const_iterator iterator = ARPEth.begin(); iterator != ARPEth.end(); ++iterator) {
+//        cout << *iterator << endl;
+//    }
 
     cout << "These IP address involve ARP: " << endl;
-    for(list<char*>::const_iterator iterator = ARPIP.begin(); iterator != ARPIP.end(); ++iterator) {
-        cout << *iterator << endl;
-    }
+//    for(list<char*>::const_iterator iterator = ARPIP.begin(); iterator != ARPIP.end(); ++iterator) {
+//        cout << *iterator << endl;
+//    }
 
     return 0;
 }
