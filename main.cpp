@@ -216,8 +216,8 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     } else  if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_ARP) {
         ARPEth.push_front(sourceEthStr);
         ARPEth.push_front(destEthStr);
-        ARPIP.push_front(sourceEthStr);
-        ARPIP.push_front(destEthStr);
+        ARPIP.push_front(sourceIPStr);
+        ARPIP.push_front(destIPStr);
     } else {
         cout << "Not a type supported, aborting" << endl;
         return;
