@@ -141,21 +141,21 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     char* sourceEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
     if (sourceEth.count(sourceEthStr) == 0) {
-        sourceEth.insert(pair<char *, int>(sourceEthStr, 1));
+        sourceEth.insert(sourceEth.begin(),pair<char *, int>(sourceEthStr, 1));
     } else {
         int currentNum = sourceEth.at(sourceEthStr);
         sourceEth.erase(sourceEthStr);
-        sourceEth.insert(pair<char*, int>(sourceEthStr, currentNum + 1));
+        sourceEth.insert(sourceEth.begin(),pair<char*, int>(sourceEthStr, currentNum + 1));
     }
 
     char* destEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
     if (destEth.count(destEthStr) == 0) {
-        destEth.insert(pair<char *, int> (destEthStr, 1));
+        destEth.insert(destEth.begin(),pair<char *, int> (destEthStr, 1));
     } else {
         int currentNum = destEth.at(destEthStr);
         destEth.erase(destEthStr);
-        destEth.insert(pair<char *, int>(destEthStr, currentNum + 1));
+        destEth.insert(destEth.begin(),pair<char *, int>(destEthStr, currentNum + 1));
     }
     cout << sourceEthStr << endl;
     cout << destEthStr << endl;
@@ -167,18 +167,18 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIPStr, sizeof(destIPStr));
     inet_ntop(AF_INET, &(ipHeader->ip_dst), destIPStr, sizeof(sourceIPStr));
     if (sourceIP.count(sourceIPStr) == 0) {
-        sourceIP.insert(pair<char *, int>(sourceIPStr, 1));
+        sourceIP.insert(sourceIP.begin(),pair<char *, int>(sourceIPStr, 1));
     } else {
         int currentNum = sourceIP.at(sourceIPStr);
         sourceIP.erase(sourceIPStr);
-        sourceIP.insert(pair<char*, int>(sourceIPStr, currentNum + 1));
+        sourceIP.insert(sourceIP.begin(),pair<char*, int>(sourceIPStr, currentNum + 1));
     }
     if (destIP.count(destIPStr) == 0) {
-        destIP.insert(pair<char *, int>(destIPStr, 1));
+        destIP.insert(destIP.begin(),pair<char *, int>(destIPStr, 1));
     } else {
         int currentNum = destIP.at(destIPStr);
         destIP.erase(destIPStr);
-        destIP.insert(pair<char*, int>(destIPStr, currentNum + 1));
+        destIP.insert(destIP.begin(),pair<char*, int>(destIPStr, currentNum + 1));
     }
     cout << sourceIPStr << endl;
     cout << destIPStr << endl;
