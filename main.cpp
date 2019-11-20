@@ -141,7 +141,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     char* sourceEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
     cout << sourceEthStr << endl;
-    if (sourceEth.find(sourceEthStr) == sourceEth.end()) {
+    if (sourceEth.count(sourceEthStr) == 0) {
         sourceEth.insert(pair<char *, int>(sourceEthStr, 1));
     } else {
         int currentNum = sourceEth.at(sourceEthStr);
@@ -152,7 +152,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     char* destEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
     cout << destEthStr << endl;
-    if (destEth.find(destEthStr) == destEth.end()) {
+    if (destEth.count(destEthStr) == 0) {
         destEth.insert(pair<char *, int> (destEthStr, 1));
     } else {
         int currentNum = destEth.at(destEthStr);
@@ -167,14 +167,14 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     cout << sourceIPStr << endl;
     cout << destIPStr << endl;
     cout << endl;
-    if (sourceIP.find(sourceIPStr) == sourceIP.end()) {
+    if (sourceIP.count(sourceIPStr) == 0) {
         sourceIP.insert(pair<char *, int>(sourceIPStr, 1));
     } else {
         int currentNum = sourceIP.at(sourceIPStr);
         sourceIP.erase(sourceIPStr);
         sourceIP.insert(pair<char*, int>(sourceIPStr, currentNum + 1));
     }
-    if (destIP.find(destIPStr) == destIP.end()) {
+    if (destIP.count(destIPStr) == 0) {
         destIP.insert(pair<char *, int>(destIPStr, 1));
     } else {
         int currentNum = destIP.at(destIPStr);
