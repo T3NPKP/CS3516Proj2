@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
     struct ether_header *ethernetHeader;
     struct ip *ipHeader;
-    struct udphdr *udpHeader
+    struct udphdr *udpHeader;
     ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
     char destIPStr[INET_ADDRSTRLEN] = "";
     char sourceIPStr[INET_ADDRSTRLEN]= "";
