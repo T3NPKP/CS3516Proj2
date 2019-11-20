@@ -150,7 +150,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     char* destEthStr = ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
     cout << destEthStr << endl;
     if (destEth.find(destEthStr) == destEth.end()) {
         destEth.insert(pair<char *, int> (destEthStr, 1));
