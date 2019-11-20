@@ -139,7 +139,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     ethernetHeader = (struct ether_header*)packet;
 
     char* sourceEthStr = ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
     cout << sourceEthStr << endl;
     if (sourceEth.find(sourceEthStr) == sourceEth.end()) {
         sourceEth.insert(pair<char *, int>(sourceEthStr, 1));
@@ -150,7 +150,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     char* destEthStr = ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
     cout << destEthStr << endl;
     if (destEth.find(destEthStr) == destEth.end()) {
         destEth.insert(pair<char *, int> (destEthStr, 1));
