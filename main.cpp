@@ -12,6 +12,7 @@
 #include <climits>
 #include <time.h>
 #include <arpa/inet.h>
+#include <list>
 
 using namespace std;
 
@@ -26,12 +27,13 @@ map<char *, int> sourceEth;
 map<char *, int> destEth;
 map<char *, int> sourceIP;
 map<char *, int> destIP;
-
-
+list<u_short> destPorts;
+list<u_short> sourcePorts;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
 int main(int argc, char* argv[]) {
+    // Initialize the package capture
     pcap_t *descr;
     char errbuf[PCAP_ERRBUF_SIZE];
     if (argc != 2) {
@@ -101,6 +103,25 @@ int main(int argc, char* argv[]) {
         it ++;
     }
 
+    destPorts.unique();
+    sourcePorts.unique();
+
+    auto itList = sourcePorts.begin();
+    cout << "These ports are used in communication as source: ";
+    while (itList != sourcePorts.end()) {
+        cout << *itList << ", ";
+        it ++;
+    }
+    cout << '\n';
+
+    itList = destPorts.begin();
+    cout << "These ports are used in communication as destination: ";
+    while (itList != destPorts.end()) {
+        cout << *itList << ", ";
+        it ++;
+    }
+    cout << '\n';
+
     return 0;
 }
 
@@ -157,6 +178,9 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         destIP.insert(pair<char*, int>(destIPStr, currentNum + 1));
     }
 
+    udpHeader = (udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip));
+    sourcePorts.insert(sourcePorts.begin(), udpHeader->uh_sport);
+    destPorts.insert(destPorts.begin(), udpHeader->uh_dport);
 
 
     // Size management
