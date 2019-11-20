@@ -140,7 +140,6 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
 
     char* sourceEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
-    cout << sourceEthStr << endl;
     if (sourceEth.count(sourceEthStr) == 0) {
         sourceEth.insert(pair<char *, int>(sourceEthStr, 1));
     } else {
@@ -151,7 +150,6 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
 
     char* destEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
-    cout << destEthStr << endl;
     if (destEth.count(destEthStr) == 0) {
         destEth.insert(pair<char *, int> (destEthStr, 1));
     } else {
@@ -159,6 +157,8 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         destEth.erase(destEthStr);
         destEth.insert(pair<char *, int>(destEthStr, currentNum + 1));
     }
+    cout << sourceEthStr << endl;
+    cout << destEthStr << endl;
 
     // IP address
     ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
@@ -166,9 +166,6 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     char sourceIPStr[INET_ADDRSTRLEN]= "";
     inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIPStr, sizeof(destIPStr));
     inet_ntop(AF_INET, &(ipHeader->ip_dst), destIPStr, sizeof(sourceIPStr));
-    cout << sourceIPStr << endl;
-    cout << destIPStr << endl;
-    cout << endl;
     if (sourceIP.count(sourceIPStr) == 0) {
         sourceIP.insert(pair<char *, int>(sourceIPStr, 1));
     } else {
@@ -183,6 +180,9 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         destIP.erase(destIPStr);
         destIP.insert(pair<char*, int>(destIPStr, currentNum + 1));
     }
+    cout << sourceIPStr << endl;
+    cout << destIPStr << endl;
+    cout << endl;
 
     udpHeader = (udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip));
     sourcePorts.push_front(ntohs(udpHeader->uh_sport));
