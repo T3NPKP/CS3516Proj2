@@ -126,10 +126,9 @@ int main(int argc, char* argv[]) {
 }
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
-    const struct ether_header *ethernetHeader;
-    const struct ip *ipHeader;
-    const struct udphdr *udpHeader;
-    struct ether_header *eth_header;
+    struct ether_header *ethernetHeader;
+    struct ip *ipHeader;
+    struct udphdr *udpHeader;
 
     // Put time within here if it is the first one
     if (numPackets == 0) {
