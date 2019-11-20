@@ -104,6 +104,8 @@ int main(int argc, char* argv[]) {
         it ++;
     }
 
+    destPorts.sort();
+    sourcePorts.sort();
     destPorts.unique(same);
     sourcePorts.unique(same);
 
