@@ -21,8 +21,8 @@ int currentMin = INT_MAX;
 int currentMax = INT_MIN;
 struct timeval startTime;
 struct timeval endTime;
-map<char *, int> sourceEths;
-map<char *, int> destEths;
+map<string, int> sourceEths;
+map<string, int> destEths;
 map<string, int> sourceIPs;
 map<string, int> destIPs;
 list<u_short> destPorts;
@@ -72,13 +72,13 @@ int main(int argc, char* argv[]) {
     cout << "The smallest packet is " << currentMin << " Bytes" << endl;
 
     for (auto it = sourceEths.begin(); it != sourceEths.end(); ++it) {
-        char* ethStr = it->first;
+        string ethStr = it->first;
         int amount = it->second;
         cout << "Ethernet address " << ethStr << " has " << amount << " packets related as source" << endl;
     }
 
     for (auto it = destEths.begin(); it != destEths.end(); ++it) {
-        char* destStr = it->first;
+        string destStr = it->first;
         int amount = it->second;
         cout << "Ethernet address " << destStr << " has " << amount << " packets related as destination" << endl;
     }
