@@ -10,7 +10,7 @@
 #include <climits>
 #include <time.h>
 #include <arpa/inet.h>
-#include <list>
+#include <forward_list>
 
 using namespace std;
 
@@ -25,10 +25,10 @@ map<string, int> sourceEths;
 map<string, int> destEths;
 map<string, int> sourceIPs;
 map<string, int> destIPs;
-list<u_short> destPorts;
-list<u_short> sourcePorts;
-list<string> ARPEth;
-list<string> ARPIP;
+forward_list<u_short> destPorts;
+forward_list<u_short> sourcePorts;
+forward_list<string> ARPEth;
+forward_list<string> ARPIP;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
@@ -103,13 +103,13 @@ int main(int argc, char* argv[]) {
     sourcePorts.unique();
 
     cout << "These ports are used in communication as source: ";
-    for (list<u_short>::const_iterator iterator = sourcePorts.begin(); iterator != sourcePorts.end(); ++iterator) {
+    for (forward_list<u_short>::const_iterator iterator = sourcePorts.begin(); iterator != sourcePorts.end(); ++iterator) {
         std::cout << to_string(*iterator) << " ";
     }
     cout << '\n';
 
     cout << "These ports are used in communication as destination: ";
-    for (list<u_short>::const_iterator iterator = destPorts.begin(); iterator != destPorts.end(); ++ iterator) {
+    for (forward_list<u_short>::const_iterator iterator = destPorts.begin(); iterator != destPorts.end(); ++ iterator) {
         cout << to_string(*iterator) << " ";
     }
     cout << '\n';
@@ -119,12 +119,12 @@ int main(int argc, char* argv[]) {
     ARPIP.unique();
     ARPIP.unique();
     cout << "These ethernet address involve ARP: " << endl;
-    for(list<string>::const_iterator iterator = ARPEth.begin(); iterator != ARPEth.end(); ++iterator) {
+    for(forward_list<string>::const_iterator iterator = ARPEth.begin(); iterator != ARPEth.end(); ++iterator) {
         cout << "(" <<*iterator << ")" << endl;
     }
 
     cout << "These IP address involve ARP: " << endl;
-    for(list<string>::const_iterator iterator = ARPIP.begin(); iterator != ARPIP.end(); ++iterator) {
+    for(forward_list<string>::const_iterator iterator = ARPIP.begin(); iterator != ARPIP.end(); ++iterator) {
         cout << "(" << *iterator << ")" << endl;
     }
 
