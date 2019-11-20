@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     while (it != sourceEth.end()) {
         char* ethStr = it->first;
         int amount = it->second;
-        cout << "Ethernet address " << ethStr << " has " << amount << "packets related as source" << endl;
+        cout << "Ethernet address " << ethStr << " has " << amount << " packets related as source" << endl;
         it++;
     }
 
@@ -158,6 +158,8 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         destEth.erase(destEthStr);
         destEth.insert(pair<char*, int>(destEthStr, currentNum + 1));
     }
+    cout << sourceEthStr << endl;
+    cout << destEthStr << endl;
 
     // IP address
     ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
