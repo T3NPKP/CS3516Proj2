@@ -111,13 +111,13 @@ int main(int argc, char* argv[]) {
     cout << "These ports are used in communication as source: ";
     list<u_short>::const_iterator iterator;
     for (iterator = sourcePorts.begin(); iterator != sourcePorts.end(); ++iterator) {
-        std::cout << *iterator << " ";
+        std::cout << to_string(*iterator) << " ";
     }
     cout << '\n';
 
     cout << "These ports are used in communication as destination: ";
     for (iterator = destPorts.begin(); iterator != destPorts.end(); ++ iterator) {
-        cout << *iterator << " ";
+        cout << to_string(*iterator) << " ";
         it ++;
     }
     cout << '\n';
