@@ -1,5 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "modernize-use-nullptr"
 #include <iostream>
 #include <iterator>
 #include <map>
@@ -139,8 +137,9 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
 
     //ethernet address
     ethernetHeader = (struct ether_header*)packet;
+
     char* sourceEthStr = ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
     cout << sourceEthStr << endl;
     if (sourceEth.find(sourceEthStr) == sourceEth.end()) {
         sourceEth.insert(pair<char *, int>(sourceEthStr, 1));
@@ -149,6 +148,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         sourceEth.erase(sourceEthStr);
         sourceEth.insert(pair<char*, int>(sourceEthStr, currentNum + 1));
     }
+
     char* destEthStr = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
     cout << destEthStr << endl;
@@ -203,4 +203,3 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         return;
     }
 }
-#pragma clang diagnostic pop
