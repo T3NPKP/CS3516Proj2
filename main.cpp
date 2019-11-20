@@ -141,7 +141,30 @@ int main(int argc, char* argv[]) {
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
     struct ether_header *ethernetHeader;
     struct ip *ipHeader;
-    struct udphdr *udpHeader;
+    struct udphdr *udpHeader
+    ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
+    char destIPStr[INET_ADDRSTRLEN] = "";
+    char sourceIPStr[INET_ADDRSTRLEN]= "";
+    inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIPStr, sizeof(destIPStr));
+    inet_ntop(AF_INET, &(ipHeader->ip_dst), destIPStr, sizeof(sourceIPStr));;
+    ethernetHeader = (struct ether_header*)packet;
+    char* destEthStr = ether_ntoa(
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
+
+    char* sourceEthStr = ether_ntoa(
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
+
+    if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_IP) {
+        //TODO: do something for IP
+    } else  if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_ARP) {
+        ARPEth.push_front(sourceEthStr);
+        ARPEth.push_front(destEthStr);
+        ARPIP.push_front(sourceIPStr);
+        ARPIP.push_front(destIPStr);
+    } else {
+        cout << "Not a type supported, aborting" << endl;
+        return;
+    }
 
     // Put time within here if it is the first one
     if (numPackets == 0) {
@@ -151,10 +174,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     //ethernet address
-    ethernetHeader = (struct ether_header*)packet;
 
-    char* sourceEthStr = ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
     if (sourceEths.count(sourceEthStr) == 0) {
         sourceEths.insert(sourceEths.begin(),pair<char *, int>(sourceEthStr, 1));
     } else {
@@ -163,8 +183,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
         sourceEths.insert(sourceEths.begin(),pair<char*, int>(sourceEthStr, currentNum + 1));
     }
 
-    char* destEthStr = ether_ntoa(
-            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
+
     if (destEths.count(destEthStr) == 0) {
         destEths.insert(destEths.begin(),pair<char *, int> (destEthStr, 1));
     } else {
@@ -176,11 +195,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     cout << destEthStr << endl;
 
     // IP address
-    ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
-    char destIPStr[INET_ADDRSTRLEN] = "";
-    char sourceIPStr[INET_ADDRSTRLEN]= "";
-    inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIPStr, sizeof(destIPStr));
-    inet_ntop(AF_INET, &(ipHeader->ip_dst), destIPStr, sizeof(sourceIPStr));
+
     if (sourceIPs.count(sourceIPStr) == 0) {
         sourceIPs.insert(sourceIPs.begin(),pair<char *, int>(sourceIPStr, 1));
     } else {
@@ -211,15 +226,5 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     if (size < currentMin) currentMin = size;
     totalPacketSize += size;
 
-    if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_IP) {
-        //TODO: do something for IP
-    } else  if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_ARP) {
-        ARPEth.push_front(sourceEthStr);
-        ARPEth.push_front(destEthStr);
-        ARPIP.push_front(sourceIPStr);
-        ARPIP.push_front(destIPStr);
-    } else {
-        cout << "Not a type supported, aborting" << endl;
-        return;
-    }
+
 }
