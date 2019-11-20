@@ -156,10 +156,11 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     } else {
         int currentNum = destEth.at(destEthStr);
         destEth.erase(destEthStr);
-        destEth.insert(pair<char*, int>(destEthStr, currentNum + 1));
+        destEth.insert(pair<char *, int>(destEthStr, currentNum + 1));
     }
     cout << sourceEthStr << endl;
     cout << destEthStr << endl;
+    cout << endl;
 
     // IP address
     ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
