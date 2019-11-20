@@ -1,6 +1,8 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "modernize-use-nullptr"
 #include <iostream>
+#include <iterator>
+#include <map>
 #include <pcap.h>
 #include <net/ethernet.h>
 #include <netinet/ip.h>
@@ -11,18 +13,20 @@
 #include <time.h>
 
 using namespace std;
+
+//Global variables
 int numPackets = 0;
 int totalPacketSize = 0;
 int currentMin = INT_MAX;
 int currentMax = INT_MIN;
 struct timeval startTime;
 struct timeval endTime;
+map<char *, int> sourceEth;
+map<char *, int> destEth;
+map<char *, int> sourceIP;
+map<char *, int> destIP;
 
-typedef struct __attribute__((__packed__)) EtherHeader {
-    const struct ether_addr destAddr;
-    const struct ether_addr sourceAddr;
-    uint8_t protocol;
-}EtherHeader;
+
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
@@ -56,12 +60,29 @@ int main(int argc, char* argv[]) {
     double usec = endTime.tv_usec - startTime.tv_usec;
     double timeLast = endTime.tv_sec - startTime.tv_sec + usec / 1000000;
 
+    // print out info part
     cout << "The packet starts at " << ctime((const time_t*)&startTime.tv_sec);
     cout << "The packet lasts " << timeLast << " seconds" << endl;
     cout << "There are " << numPackets << " packets in total" << endl;
     cout << "Average packet size is " << totalPacketSize / numPackets << " Bytes" << endl;
     cout << "The biggest packet is " << currentMax << " Bytes" << endl;
     cout << "The smallest packet is " << currentMin << " Bytes" << endl;
+
+    auto it = sourceEth.begin();
+    while (it != sourceEth.end()) {
+        char* ethStr = it->first;
+        int amount = it->second;
+        cout << "Ethernet address " << ethStr << " has " << amount << "packets related as source" << endl;
+        it++;
+    }
+
+    it = destEth.begin();
+    while (it != destEth.end()) {
+        char* destStr = it->first;
+        int amount = it->second;
+        cout << "Ethernet address " << destStr << " has " << amount << "packets related as destination" << endl;
+        it++;
+    }
 
     return 0;
 }
@@ -82,6 +103,24 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     ethernetHeader = (struct ether_header*)packet;
+    char* sourceEthStr = ether_ntoa(
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
+    if (sourceEth.find(sourceEthStr) == sourceEth.end()) {
+        sourceEth.insert(pair<char *, int>(sourceEthStr, 1));
+    } else {
+        int currentNum = sourceEth.at(sourceEthStr);
+        sourceEth.erase(sourceEthStr);
+        sourceEth.insert(pair<char*, int>(sourceEthStr, currentNum + 1));
+    }
+    char* destEthStr = ether_ntoa(
+            reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
+    if (destEth.find(destEthStr) == destEth.end()) {
+        destEth.insert(pair<char *, int> (destEthStr, 1));
+    } else {
+        int currentNum = destEth.at(destEthStr);
+        destEth.erase(destEthStr);
+        destEth.insert(pair<char*, int>(destEthStr, currentNum + 1));
+    }
     cout << "The destination Ethernet address is: " << ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost)) << endl;
     cout << "The source Ethernet address is: " << ether_ntoa(
