@@ -183,8 +183,8 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     udpHeader = (udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip));
-    sourcePorts.push_front(udpHeader->uh_sport);
-    destPorts.push_front(udpHeader->uh_dport);
+    sourcePorts.push_front(ntohs(udpHeader->uh_sport));
+    destPorts.push_front(ntohs(udpHeader->uh_dport));
 
 
     // Size management
