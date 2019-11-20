@@ -120,12 +120,12 @@ int main(int argc, char* argv[]) {
     ARPIP.unique();
     cout << "These ethernet address involve ARP: " << endl;
     for(list<string>::const_iterator iterator = ARPEth.begin(); iterator != ARPEth.end(); ++iterator) {
-        cout << *iterator << endl;
+        cout << "(" <<*iterator << ")" << endl;
     }
 
     cout << "These IP address involve ARP: " << endl;
     for(list<string>::const_iterator iterator = ARPIP.begin(); iterator != ARPIP.end(); ++iterator) {
-        cout << *iterator << endl;
+        cout << "(" << *iterator << ")" << endl;
     }
 
     return 0;
