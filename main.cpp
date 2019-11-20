@@ -27,8 +27,8 @@ map<string, int> sourceIPs;
 map<string, int> destIPs;
 list<u_short> destPorts;
 list<u_short> sourcePorts;
-list<char *> ARPEth;
-list<char *> ARPIP;
+list<string> ARPEth;
+list<string> ARPIP;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
 
@@ -136,16 +136,19 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     struct ip *ipHeader;
     struct udphdr *udpHeader;
     ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
-    char destIPStr[INET_ADDRSTRLEN] = "";
-    char sourceIPStr[INET_ADDRSTRLEN]= "";
-    inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIPStr, sizeof(destIPStr));
-    inet_ntop(AF_INET, &(ipHeader->ip_dst), destIPStr, sizeof(sourceIPStr));;
+    char destIP[INET_ADDRSTRLEN] = "";
+    char sourceIP[INET_ADDRSTRLEN]= "";
+    inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIP, sizeof(destIP));
+    string sourceIPStr(sourceIP);
+    inet_ntop(AF_INET, &(ipHeader->ip_dst), destIP, sizeof(sourceIP));
+    string destIPStr(destIP);
     ethernetHeader = (struct ether_header*)packet;
-    char* destEthStr = ether_ntoa(
+    char* destEth = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_dhost));
-
-    char* sourceEthStr = ether_ntoa(
+    string destEthStr (destEth);
+    char* sourceEth = ether_ntoa(
             reinterpret_cast<const ether_addr *>(&ethernetHeader->ether_shost));
+    string sourceEthStr(sourceEth);
 
     if (ntohs(ethernetHeader->ether_type) == ETHERTYPE_IP) {
         //TODO: do something for IP
@@ -169,43 +172,38 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     //ethernet address
 
     if (sourceEths.count(sourceEthStr) == 0) {
-        sourceEths.insert(sourceEths.begin(),pair<char *, int>(sourceEthStr, 1));
+        sourceEths.insert(sourceEths.begin(),pair<string, int>(sourceEthStr, 1));
     } else {
         int currentNum = sourceEths.at(sourceEthStr);
         sourceEths.erase(sourceEthStr);
-        sourceEths.insert(sourceEths.begin(),pair<char*, int>(sourceEthStr, currentNum + 1));
+        sourceEths.insert(sourceEths.begin(),pair<string, int>(sourceEthStr, currentNum + 1));
     }
 
 
     if (destEths.count(destEthStr) == 0) {
-        destEths.insert(destEths.begin(),pair<char *, int> (destEthStr, 1));
+        destEths.insert(destEths.begin(),pair<string, int> (destEthStr, 1));
     } else {
         int currentNum = destEths.at(destEthStr);
         destEths.erase(destEthStr);
-        destEths.insert(destEths.begin(),pair<char *, int>(destEthStr, currentNum + 1));
+        destEths.insert(destEths.begin(),pair<string, int>(destEthStr, currentNum + 1));
     }
-    cout << sourceEthStr << endl;
-    cout << destEthStr << endl;
 
     // IP address
 
     if (sourceIPs.count(sourceIPStr) == 0) {
-        sourceIPs.insert(sourceIPs.begin(),pair<char *, int>(sourceIPStr, 1));
+        sourceIPs.insert(sourceIPs.begin(),pair<string, int>(sourceIPStr, 1));
     } else {
         int currentNum = sourceIPs.at(sourceIPStr);
         sourceIPs.erase(sourceIPStr);
-        sourceIPs.insert(sourceIPs.begin(),pair<char*, int>(sourceIPStr, currentNum + 1));
+        sourceIPs.insert(sourceIPs.begin(),pair<string, int>(sourceIPStr, currentNum + 1));
     }
     if (destIPs.count(destIPStr) == 0) {
-        destIPs.insert(destIPs.begin(),pair<char *, int>(destIPStr, 1));
+        destIPs.insert(destIPs.begin(),pair<string, int>(destIPStr, 1));
     } else {
         int currentNum = destIPs.at(destIPStr);
         destIPs.erase(destIPStr);
-        destIPs.insert(destIPs.begin(),pair<char*, int>(destIPStr, currentNum + 1));
+        destIPs.insert(destIPs.begin(),pair<string, int>(destIPStr, currentNum + 1));
     }
-    cout << sourceIPStr << endl;
-    cout << destIPStr << endl;
-    cout << endl;
 
     udpHeader = (udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip));
     sourcePorts.push_front(ntohs(udpHeader->uh_sport));
