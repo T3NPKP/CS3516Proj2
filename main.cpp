@@ -117,15 +117,15 @@ int main(int argc, char* argv[]) {
     ARPIP.sort();
     ARPEth.sort();
     ARPIP.unique();
-    ARPIP.unique();
+    ARPEth.unique();
     cout << "These ethernet address involve ARP: " << endl;
     for(forward_list<string>::const_iterator iterator = ARPEth.begin(); iterator != ARPEth.end(); ++iterator) {
-        cout << "(" <<*iterator << ")" << endl;
+        cout <<*iterator << endl;
     }
 
     cout << "These IP address involve ARP: " << endl;
     for(forward_list<string>::const_iterator iterator = ARPIP.begin(); iterator != ARPIP.end(); ++iterator) {
-        cout << "(" << *iterator << ")" << endl;
+        cout << *iterator << endl;
     }
 
     return 0;
