@@ -85,6 +85,22 @@ int main(int argc, char* argv[]) {
         it++;
     }
 
+    it = sourceIP.begin();
+    while (it != sourceIP.end()) {
+        char* IPStr = it -> first;
+        int amount = it -> second;
+        cout << "IP address " << IPStr << " has " << amount << " packets related as source" << endl;
+        it ++;
+    }
+
+    it = destIP.begin();
+    while (it != destIP.end()) {
+        char* IPStr = it -> first;
+        int amount = it -> second;
+        cout << "IP address " << IPStr << " has " << amount << " packets related as destination" << endl;
+        it ++;
+    }
+
     return 0;
 }
 
@@ -93,8 +109,6 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     const struct ip *ipHeader;
     const struct udphdr *udpHeader;
     struct ether_header *eth_header;
-    char sourceIp[INET_ADDRSTRLEN];
-    char destIp[INET_ADDRSTRLEN];
 
     // Put time within here if it is the first one
     if (numPackets == 0) {
@@ -125,9 +139,23 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
     }
 
     // IP address
-    char str[INET_ADDRSTRLEN];
     ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
-    cout << inet_ntoa(ipHeader->ip_dst) << endl;
+    char* destIPStr = inet_ntoa(ipHeader->ip_dst);
+    char* sourceIPStr = inet_ntoa(ipHeader->ip_src);
+    if (sourceIP.find(sourceIPStr) == sourceIP.end()) {
+        sourceIP.insert(pair<char *, int>(sourceIPStr, 1));
+    } else {
+        int currentNum = sourceIP.at(sourceIPStr);
+        sourceIP.erase(sourceIPStr);
+        sourceIP.insert(pair<char*, int>(sourceIPStr, currentNum + 1));
+    }
+    if (destIP.find(destIPStr) == destIP.end()) {
+        destIP.insert(pair<char *, int>(destIPStr, 1));
+    } else {
+        int currentNum = destIP.at(destIPStr);
+        destIP.erase(destIPStr);
+        destIP.insert(pair<char*, int>(destIPStr, currentNum + 1));
+    }
 
 
 
