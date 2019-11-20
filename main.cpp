@@ -31,7 +31,6 @@ list<u_short> destPorts;
 list<u_short> sourcePorts;
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
-bool same (u_short first, u_short second);
 
 int main(int argc, char* argv[]) {
     // Initialize the package capture
@@ -106,8 +105,8 @@ int main(int argc, char* argv[]) {
 
     destPorts.sort();
     sourcePorts.sort();
-    destPorts.unique(same);
-    sourcePorts.unique(same);
+    destPorts.unique();
+    sourcePorts.unique();
 
     cout << "These ports are used in communication as source: ";
     list<u_short>::const_iterator iterator;
@@ -124,10 +123,6 @@ int main(int argc, char* argv[]) {
     cout << '\n';
 
     return 0;
-}
-
-bool same(u_short first, u_short second) {
-    return (first == second);
 }
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
