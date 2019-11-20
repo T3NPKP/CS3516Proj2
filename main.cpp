@@ -162,8 +162,8 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_c
 
     // IP address
     ipHeader = (struct ip*)(packet + sizeof(struct ether_header));
-    char destIPStr[INET_ADDRSTRLEN];
-    char sourceIPStr[INET_ADDRSTRLEN];
+    char destIPStr[INET_ADDRSTRLEN] = "";
+    char sourceIPStr[INET_ADDRSTRLEN]= "";
     inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIPStr, sizeof(destIPStr));
     inet_ntop(AF_INET, &(ipHeader->ip_dst), destIPStr, sizeof(sourceIPStr));
     cout << sourceIPStr << endl;
